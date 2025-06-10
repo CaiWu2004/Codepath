@@ -32,7 +32,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented required features:
 
-<img src='file:///Users/caimingwu/Downloads/Screen%20Recording%202025-06-10%20at%204.56.55%E2%80%AFPM.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='/Users/caimingwu/Downloads/Screen Recording 2025-06-10 at 4.56.55 PM.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 <!-- Replace this with whatever GIF tool you used! -->
 
