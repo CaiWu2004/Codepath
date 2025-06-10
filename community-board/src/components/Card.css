@@ -1,0 +1,50 @@
+.card {
+  border-radius: 8px;
+  padding: 1rem;
+  width: 250px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff8e7;
+  color: #333;
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card a {
+  text-decoration: none;
+  color: white;
+  background-color: #333;
+  padding: 0.5rem 1rem;
+  display: inline-block;
+  margin-top: 10px;
+  border-radius: 4px;
+}
+
+.card-button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #4b0082;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.card-button:hover {
+  background-color: #360062;
+}
+
+.card-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
