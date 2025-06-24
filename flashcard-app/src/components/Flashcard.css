@@ -29,3 +29,11 @@
 .flashcard.back {
   background-color: #fef3c7;
 }
+
+.flashcard.correct {
+  border: 3px solid #10b981;
+}
+
+.flashcard.incorrect {
+  border: 3px solid #ef4444;
+}

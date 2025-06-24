@@ -1,4 +1,4 @@
-.next-button {
+/* .next-button {
   margin-top: 15px;
   padding: 10px 20px;
   font-size: 1rem;
@@ -12,4 +12,236 @@
 
 .next-button:hover {
   background-color: #2563eb;
+} */
+
+/* .flashcard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 20px;
+}
+
+.navigation button {
+  padding: 8px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.navigation button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.answer-input {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.answer-input input {
+  flex-grow: 1;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.answer-input button {
+  padding: 8px 16px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.feedback {
+  padding: 10px;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.feedback.correct {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.feedback.incorrect {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+.master-button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+} */
+
+/* Add this to your FlashcardList.css */
+.app-container {
+  background-image: url("https://img.freepik.com/free-vector/3d-style-black-background-with-paper-layer_206725-669.jpg?semt=ais_hybrid&w=740");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.content-overlay {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 30px;
+  border-radius: 15px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.flashcard-container {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+}
+
+.navigation button {
+  padding: 8px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.navigation button:hover {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+}
+
+.navigation button:disabled {
+  background-color: #6b7280;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.streak-counter {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+}
+
+.feedback {
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.feedback.correct {
+  background-color: rgba(74, 222, 128, 0.2);
+  border: 1px solid #4ade80;
+}
+
+.feedback.incorrect {
+  background-color: rgba(248, 113, 113, 0.2);
+  border: 1px solid #f87171;
+}
+
+.feedback.incorrect-empty {
+  background-color: rgba(253, 230, 138, 0.2);
+  border: 1px solid #fde68a;
+}
+
+.master-button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.master-button:hover {
+  background-color: #059669;
+  transform: translateY(-2px);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 30px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  max-width: 500px;
+  margin: 50px auto;
+}
+
+.empty-state button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.empty-state button:hover {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+}
+
+h1 {
+  color: #fbbf24;
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 2.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+p {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #e5e7eb;
 }
