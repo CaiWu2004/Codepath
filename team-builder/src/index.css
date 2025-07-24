@@ -1,0 +1,478 @@
+/* Base Styles */
+:root {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+
+  /* Dark theme as default */
+  color-scheme: dark;
+  color: #ffffff;
+  background-color: #0d1117;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Among Us Color Palette */
+:root {
+  --amongus-red: #e74c3c;
+  --amongus-blue: #3498db;
+  --amongus-dark: #1a1a2e;
+  --amongus-darker: #0d1117;
+  --amongus-light: #f8f8f8;
+  --impostor-red: #ff5555;
+  --crewmate-blue: #5555ff;
+}
+
+/* Layout */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--amongus-darker);
+  background-image: radial-gradient(
+      circle at 25% 25%,
+      rgba(231, 76, 60, 0.1) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 75% 75%,
+      rgba(52, 152, 219, 0.1) 0%,
+      transparent 50%
+    );
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Navigation - Among Us Style */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--amongus-red);
+}
+
+.nav-logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-logo::before {
+  content: "🚀";
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.nav-links a:hover {
+  background-color: var(--amongus-red);
+  transform: translateY(-2px);
+}
+
+/* Crewmate Cards - Among Us Style */
+.crewmate-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.crewmate-card {
+  background-color: var(--amongus-dark);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+.crewmate-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 20px rgba(231, 76, 60, 0.2);
+  border-color: var(--amongus-red);
+}
+
+.crewmate-card.impostor {
+  border-color: var(--impostor-red);
+  background-color: #2a1a1e;
+}
+
+/* Updated Crewmate Avatar - Authentic Among Us Style */
+.crewmate-avatar {
+  width: 120px;
+  height: 144px; /* 5:6 aspect ratio */
+  margin: 0 auto 1rem;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  overflow: visible;
+  background: transparent !important;
+}
+
+.crewmate-avatar img {
+  width: 100%;
+  height: auto;
+  min-height: 120px;
+  object-fit: contain;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));
+  transition: transform 0.3s ease;
+}
+
+.crewmate-avatar img:hover {
+  transform: scale(1.05);
+}
+
+/* Fallback styling for missing images */
+.crewmate-avatar img[src=""] {
+  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%231a1a2e"/><text x="50%" y="50%" fill="%23ff5555" font-family="sans-serif" font-size="10" dominant-baseline="middle" text-anchor="middle">Image Missing</text></svg>');
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin: 0.5rem 0;
+}
+
+.crewmate-card .role-badge {
+  background-color: var(--crewmate-blue);
+}
+
+.impostor .role-badge {
+  background-color: var(--impostor-red);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}
+
+/* Forms - Among Us Theme */
+.among-us-theme {
+  background-color: var(--amongus-dark);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  border: 2px solid #2c3e50;
+}
+
+.among-us-theme h2 {
+  color: white;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  position: relative;
+}
+
+.among-us-theme h2::after {
+  content: "";
+  display: block;
+  width: 100px;
+  height: 3px;
+  background-color: var(--amongus-red);
+  margin: 0.5rem auto 0;
+}
+
+form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  form {
+    grid-template-columns: 1fr;
+  }
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: white;
+  font-weight: 500;
+}
+
+input,
+select,
+textarea {
+  padding: 0.8rem;
+  background-color: #2c3e50;
+  border: 1px solid #3d566e;
+  border-radius: 6px;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--amongus-red);
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.3);
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Among Us Button Styles */
+.among-us-button {
+  background-color: var(--amongus-red);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  grid-column: 1 / -1;
+  margin-top: 1rem;
+}
+
+.among-us-button:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+}
+
+.among-us-button:active {
+  transform: translateY(0);
+}
+
+.among-us-button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Checkbox Style */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  grid-column: 1 / -1;
+}
+
+.checkbox-label input {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--amongus-red);
+}
+
+/* Error Message */
+.error-message {
+  color: #ff5555;
+  background-color: rgba(255, 85, 85, 0.1);
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  grid-column: 1 / -1;
+  border-left: 4px solid #ff5555;
+}
+
+/* Crewmate Details Page */
+.crewmate-details {
+  background-color: var(--amongus-dark);
+  border-radius: 12px;
+  padding: 2rem;
+  color: white;
+}
+
+.crewmate-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.crewmate-avatar-large {
+  width: 200px;
+  height: 240px; /* 5:6 aspect ratio */
+  margin: 0 auto 1rem;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  overflow: visible;
+  background: transparent !important;
+}
+
+.crewmate-avatar-large img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.4));
+}
+
+.crewmate-hat-large {
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  height: auto;
+  z-index: 10;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.info-grid div:nth-child(odd) {
+  font-weight: bold;
+  color: var(--amongus-red);
+}
+
+.bio-section {
+  background-color: rgba(44, 62, 80, 0.5);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: white;
+  font-size: 1.2rem;
+}
+
+/* Animation for loading */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.loading::after {
+  content: "⏳";
+  font-size: 2rem;
+  margin-left: 1rem;
+  animation: float 2s ease-in-out infinite;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 1rem;
+  }
+
+  .crewmate-gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .navbar {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .crewmate-avatar {
+    width: 100px;
+    height: 120px;
+  }
+
+  .crewmate-avatar-large {
+    width: 150px;
+    height: 180px;
+  }
+}
+
+/* Error State */
+.error {
+  padding: 2rem;
+  text-align: center;
+  color: #ff3333;
+  font-size: 1.2rem;
+}
+
+/* Animation for crewmate hover */
+@keyframes crewmate-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.crewmate-card:hover .crewmate-avatar img {
+  animation: crewmate-bounce 1s ease-in-out;
+}
+
+/* Image Error Fallback */
+.image-fallback {
+  position: relative;
+}
+
+.image-fallback::after {
+  content: "Image Not Available";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--impostor-red);
+  font-size: 0.8rem;
+  text-align: center;
+  width: 100%;
+}
+
+/* Debug border - can be removed after confirming images work */
+.debug-image {
+  border: 1px solid #ff5555;
+}
