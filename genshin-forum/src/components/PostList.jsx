@@ -1,54 +1,21 @@
-import { useEffect } from "react";
 import Post from "./Post";
-import { useAuth } from "../context/AuthContext";
+import { useContext } from "react";
+import { PostContext } from "../context/PostContext";
+import LoadingSpinner from "./LoadingSpinner";
 
-export default function PostList({
-  posts,
-  onUpvote,
-  onDelete,
-  sortBy,
-  searchTerm,
-}) {
-  const { user } = useAuth();
+export default function PostList() {
+  const { posts, loading } = useContext(PostContext);
 
-  // Filter and sort posts based on props
-  const processedPosts = () => {
-    let filteredPosts = [...posts];
-
-    // Apply search filter
-    if (searchTerm) {
-      filteredPosts = filteredPosts.filter((post) =>
-        post.title.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Apply sorting
-    if (sortBy === "newest") {
-      filteredPosts.sort(
-        (a, b) => new Date(b.created_at) - new Date(a.created_at)
-      );
-    } else if (sortBy === "upvotes") {
-      filteredPosts.sort((a, b) => b.upvotes - a.upvotes);
-    }
-
-    return filteredPosts;
-  };
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="post-list">
-      {processedPosts().length === 0 ? (
+      {posts.length === 0 ? (
         <div className="no-posts">
           <p>No posts found. Be the first to create one!</p>
         </div>
       ) : (
-        processedPosts().map((post) => (
-          <Post
-            key={post.id}
-            post={post}
-            onUpvote={() => onUpvote(post.id, post.upvotes + 1)}
-            onDelete={() => onDelete(post.id)}
-          />
-        ))
+        posts.map((post) => <Post key={post.id} post={post} />)
       )}
     </div>
   );

@@ -1,106 +1,78 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../supabase";
-import { useAuth } from "../context/AuthContext";
-import CharacterSelector from "./CharacterSelector";
+import { PostContext } from "../context/PostContext";
 
 export default function CreatePost() {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [character, setCharacter] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState(null);
-  const { user } = useAuth();
+  const [postData, setPostData] = useState({
+    title: "",
+    content: "",
+    image: "",
+  });
+  const { createPost } = useContext(PostContext);
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setPostData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
-
-    if (!user) {
-      setError("Please log in to create posts");
-      return;
-    }
-
-    if (!title.trim()) {
-      setError("Title is required");
-      return;
-    }
-
-    setIsSubmitting(true);
-
     try {
-      const { error } = await supabase.from("posts").insert({
-        title: title.trim(),
-        content: content.trim(),
-        image_url: imageUrl.trim() || null,
-        character_name: character.trim() || null,
-        user_id: user.id,
-        upvotes: 0,
-      });
-
-      if (error) throw error;
-
-      // Reset form
-      setTitle("");
-      setContent("");
-      setImageUrl("");
-      setCharacter("");
-      navigate("/");
-    } catch (err) {
-      setError(err.message || "Failed to create post");
-    } finally {
-      setIsSubmitting(false);
+      const newPost = await createPost(postData);
+      navigate(`/post/${newPost.id}`);
+    } catch (error) {
+      console.error("Error creating post:", error);
     }
   };
 
-  if (!user) {
-    return (
-      <div className="create-post">
-        <h3>Create a Post</h3>
-        <p>Please log in to create posts</p>
-      </div>
-    );
-  }
-
   return (
     <div className="create-post">
-      <h3>Create a Post</h3>
-      {error && (
-        <div
-          className="error-message"
-          style={{ color: "red", marginBottom: "1rem" }}
-        >
-          {error}
-        </div>
-      )}
+      <h2>Create New Post</h2>
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Post Title *"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          disabled={isSubmitting}
-        />
-        <textarea
-          placeholder="Content (optional)"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          disabled={isSubmitting}
-        />
-        <input
-          type="url"
-          placeholder="Image URL (optional)"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          disabled={isSubmitting}
-        />
-        <CharacterSelector onSelect={setCharacter} disabled={isSubmitting} />
-        <button type="submit" disabled={isSubmitting || !title.trim()}>
-          {isSubmitting ? "Submitting..." : "Submit"}
-        </button>
+        <div className="form-group">
+          <label htmlFor="title">Title*</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            value={postData.title}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="content">Content</label>
+          <textarea
+            id="content"
+            name="content"
+            value={postData.content}
+            onChange={handleChange}
+            rows="5"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="image">Image URL (optional)</label>
+          <input
+            type="text"
+            id="image"
+            name="image"
+            value={postData.image}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="form-actions">
+          <button type="submit">Create Post</button>
+          <button type="button" onClick={() => navigate("/")}>
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

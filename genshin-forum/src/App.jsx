@@ -1,24 +1,30 @@
+import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import PostDetail from "./pages/PostDetails";
-import Login from "./pages/Login";
+import PostPage from "./pages/PostPage";
 import CreatePost from "./components/CreatePost";
-import Signup from "./pages/Signup";
+import { PostProvider } from "./context/PostContext";
+import "./App.css"; // Fixed import path
 
 function App() {
+  const [darkMode, setDarkMode] = useState(false);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
   return (
-    <>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/posts/:id" element={<PostDetail />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/create-post" element={<CreatePost />} />
-      </Routes>
-    </>
+    <PostProvider>
+      <div className={`app ${darkMode ? "dark" : "light"}`}>
+        <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/create" element={<CreatePost />} />
+          <Route path="/post/:id" element={<PostPage />} />
+        </Routes>
+      </div>
+    </PostProvider>
   );
 }
 
