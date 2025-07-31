@@ -24,44 +24,32 @@ export default function CreatePost() {
     }
 
     if (!title.trim()) {
-      setError("Post title is required");
+      setError("Title is required");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Verify profile exists before creating post
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("id", user.id)
-        .single();
+      const { error } = await supabase.from("posts").insert({
+        title: title.trim(),
+        content: content.trim(),
+        image_url: imageUrl.trim() || null,
+        character_name: character.trim() || null,
+        user_id: user.id,
+        upvotes: 0,
+      });
 
-      if (profileError) throw new Error("User profile not found");
+      if (error) throw error;
 
-      const { error: postError } = await supabase.from("posts").insert([
-        {
-          title: title.trim(),
-          content: content.trim(),
-          image_url: imageUrl.trim(),
-          character_name: character.trim(),
-          user_id: user.id,
-          upvotes: 0,
-        },
-      ]);
-
-      if (postError) throw postError;
-
-      // Reset form and redirect
+      // Reset form
       setTitle("");
       setContent("");
       setImageUrl("");
       setCharacter("");
-      navigate("/"); // Navigate to home instead of reloading
-    } catch (error) {
-      console.error("Error creating post:", error);
-      setError(error.message || "Failed to create post");
+      navigate("/");
+    } catch (err) {
+      setError(err.message || "Failed to create post");
     } finally {
       setIsSubmitting(false);
     }
