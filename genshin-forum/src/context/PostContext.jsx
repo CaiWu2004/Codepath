@@ -1,117 +1,98 @@
+// src/context/PostContext.jsx
 import { createContext, useState, useEffect } from "react";
-import {
-  getPosts,
-  createPost,
-  updatePost,
-  deletePost,
-  addComment,
-  upvotePost,
-} from "../services/posts";
+import { supabase } from "../lib/supabaseClient";
 
 export const PostContext = createContext();
 
 export function PostProvider({ children }) {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("createdAt");
+  // ... existing state declarations ...
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const postsData = await getPosts();
-        setPosts(postsData);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-        setLoading(false);
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("posts")
+        .select("*")
+        .order(sortBy, { ascending: sortBy === "created_at" ? false : true });
+
+      if (error) throw error;
+      setPosts(data || []);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+      // Handle RLS error specifically
+      if (error.code === "42501") {
+        console.warn("Row Level Security violation - check your policies");
       }
-    };
-    fetchPosts();
-  }, []);
-
-  const handleCreatePost = async (postData) => {
-    try {
-      const newPost = await createPost(postData);
-      setPosts([newPost, ...posts]);
-      return newPost;
-    } catch (error) {
-      console.error("Error creating post:", error);
-      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleUpdatePost = async (id, updatedData) => {
+  const uploadImage = async (file) => {
     try {
-      const updatedPost = await updatePost(id, updatedData);
-      setPosts(posts.map((post) => (post.id === id ? updatedPost : post)));
-      return updatedPost;
+      const user = supabase.auth.user();
+      if (!user) throw new Error("User not authenticated");
+
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+
+      const { data, error } = await supabase.storage
+        .from("post_images")
+        .upload(fileName, file);
+
+      if (error) throw error;
+
+      // Get public URL with cache-busting
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("post_images").getPublicUrl(data.path, {
+        download: false,
+        transform: {
+          width: 800,
+          height: 600,
+          quality: 80,
+        },
+      });
+
+      return publicUrl;
     } catch (error) {
-      console.error("Error updating post:", error);
-      throw error;
+      console.error("Detailed storage error:", error);
+      throw new Error("Image upload failed. Please try again.");
     }
   };
 
-  const handleDeletePost = async (id) => {
+  const createPost = async (postData, imageFile = null) => {
     try {
-      await deletePost(id);
-      setPosts(posts.filter((post) => post.id !== id));
+      const user = supabase.auth.user();
+      if (!user) throw new Error("User must be logged in");
+
+      let imageUrl = postData.image || null;
+
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+      }
+
+      const { data, error } = await supabase
+        .from("posts")
+        .insert([
+          {
+            title: postData.title,
+            content: postData.content,
+            image: imageUrl,
+            upvotes: 0,
+            comments: [],
+            user_id: user.id, // Critical for RLS
+          },
+        ])
+        .select();
+
+      if (error) throw error;
+      return data[0];
     } catch (error) {
-      console.error("Error deleting post:", error);
-      throw error;
+      console.error("Detailed create error:", error);
+      throw new Error(error.message || "Failed to create post");
     }
   };
 
-  const handleAddComment = async (postId, comment) => {
-    try {
-      const updatedPost = await addComment(postId, comment);
-      setPosts(posts.map((post) => (post.id === postId ? updatedPost : post)));
-      return updatedPost;
-    } catch (error) {
-      console.error("Error adding comment:", error);
-      throw error;
-    }
-  };
-
-  const handleUpvote = async (postId) => {
-    try {
-      const updatedPost = await upvotePost(postId);
-      setPosts(posts.map((post) => (post.id === postId ? updatedPost : post)));
-    } catch (error) {
-      console.error("Error upvoting post:", error);
-      throw error;
-    }
-  };
-
-  const filteredPosts = posts.filter((post) =>
-    post.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const sortedPosts = [...filteredPosts].sort((a, b) => {
-    if (sortBy === "createdAt") {
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    } else {
-      return b.upvotes - a.upvotes;
-    }
-  });
-
-  return (
-    <PostContext.Provider
-      value={{
-        posts: sortedPosts,
-        loading,
-        searchTerm,
-        setSearchTerm,
-        sortBy,
-        setSortBy,
-        createPost: handleCreatePost,
-        updatePost: handleUpdatePost,
-        deletePost: handleDeletePost,
-        addComment: handleAddComment,
-        upvotePost: handleUpvote,
-      }}
-    >
-      {children}
-    </PostContext.Provider>
-  );
+  // ... rest of your existing methods ...
 }

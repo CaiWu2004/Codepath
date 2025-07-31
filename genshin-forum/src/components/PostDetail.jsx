@@ -1,13 +1,13 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { PostContext } from "../context/PostContext";
 import Comment from "./Comment";
-import { FaArrowUp, FaEdit, FaTrash } from "react-icons/fa";
+import { FaArrowUp, FaEdit, FaTrash, FaTimes } from "react-icons/fa";
 
 export default function PostDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { posts, updatePost, deletePost, addComment, upvotePost } =
+  const { posts, updatePost, deletePost, addComment, upvotePost, uploadImage } =
     useContext(PostContext);
   const [commentText, setCommentText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -16,6 +16,9 @@ export default function PostDetail() {
     content: "",
     image: "",
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const post = posts.find((p) => p.id === id);
 
@@ -39,27 +42,48 @@ export default function PostDetail() {
     setIsEditing(true);
     setEditData({
       title: post.title,
-      content: post.content,
-      image: post.image,
+      content: post.content || "",
+      image: post.image || "",
     });
+    setImageFile(null);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setEditData((prev) => ({ ...prev, image: "" })); // Clear URL if file is selected
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleSaveEdit = async (e) => {
     e.preventDefault();
     try {
-      await updatePost(post.id, editData);
+      setIsUploading(true);
+      await updatePost(post.id, editData, imageFile);
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating post:", error);
+    } finally {
+      setIsUploading(false);
     }
   };
 
   const handleDelete = async () => {
-    try {
-      await deletePost(post.id);
-      navigate("/");
-    } catch (error) {
-      console.error("Error deleting post:", error);
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      try {
+        await deletePost(post.id);
+        navigate("/");
+      } catch (error) {
+        console.error("Error deleting post:", error);
+      }
     }
   };
 
@@ -68,31 +92,87 @@ export default function PostDetail() {
       <div className="post-content">
         {isEditing ? (
           <form onSubmit={handleSaveEdit} className="edit-form">
-            <input
-              type="text"
-              value={editData.title}
-              onChange={(e) =>
-                setEditData({ ...editData, title: e.target.value })
-              }
-              required
-            />
-            <textarea
-              value={editData.content}
-              onChange={(e) =>
-                setEditData({ ...editData, content: e.target.value })
-              }
-            />
-            <input
-              type="text"
-              value={editData.image}
-              onChange={(e) =>
-                setEditData({ ...editData, image: e.target.value })
-              }
-              placeholder="Image URL (optional)"
-            />
+            <div className="form-group">
+              <label>Title*</label>
+              <input
+                type="text"
+                value={editData.title}
+                onChange={(e) =>
+                  setEditData({ ...editData, title: e.target.value })
+                }
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Content</label>
+              <textarea
+                value={editData.content}
+                onChange={(e) =>
+                  setEditData({ ...editData, content: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Upload New Image (optional)</label>
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/*"
+                onChange={handleFileChange}
+                style={{ display: "none" }}
+              />
+              <button
+                type="button"
+                className="upload-btn"
+                onClick={() => fileInputRef.current.click()}
+              >
+                {imageFile ? "Change Image" : "Select Image"}
+              </button>
+
+              {imageFile && (
+                <div className="image-preview-container">
+                  <div className="image-preview">
+                    <img
+                      src={URL.createObjectURL(imageFile)}
+                      alt="Preview"
+                      className="preview-image"
+                    />
+                    <button
+                      type="button"
+                      className="remove-image-btn"
+                      onClick={removeImage}
+                    >
+                      <FaTimes />
+                    </button>
+                  </div>
+                  <span className="file-name">{imageFile.name}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label>Or enter image URL (optional)</label>
+              <input
+                type="text"
+                value={editData.image}
+                onChange={(e) =>
+                  setEditData({ ...editData, image: e.target.value })
+                }
+                disabled={imageFile}
+              />
+            </div>
+
             <div className="edit-actions">
-              <button type="submit">Save</button>
-              <button type="button" onClick={() => setIsEditing(false)}>
+              <button type="submit" disabled={isUploading}>
+                {isUploading ? "Saving..." : "Save Changes"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsEditing(false)}
+                disabled={isUploading}
+              >
                 Cancel
               </button>
             </div>
@@ -101,7 +181,7 @@ export default function PostDetail() {
           <>
             <div className="post-header">
               <span className="post-date">
-                {new Date(post.createdAt).toLocaleDateString()}
+                {new Date(post.created_at).toLocaleDateString()}
               </span>
               <h2>{post.title}</h2>
             </div>
@@ -120,7 +200,7 @@ export default function PostDetail() {
 
             <div className="post-actions">
               <button onClick={handleUpvote} className="upvote-btn">
-                <FaArrowUp /> Upvote ({post.upvotes})
+                <FaArrowUp /> Upvote ({post.upvotes || 0})
               </button>
 
               <div className="post-admin-actions">
@@ -137,7 +217,7 @@ export default function PostDetail() {
       </div>
 
       <div className="post-comments">
-        <h3>Comments ({post.comments.length})</h3>
+        <h3>Comments ({post.comments?.length || 0})</h3>
 
         <form onSubmit={handleAddComment} className="comment-form">
           <textarea
@@ -150,10 +230,10 @@ export default function PostDetail() {
         </form>
 
         <div className="comments-list">
-          {post.comments.length === 0 ? (
+          {post.comments?.length === 0 ? (
             <p>No comments yet. Be the first to comment!</p>
           ) : (
-            post.comments.map((comment) => (
+            post.comments?.map((comment) => (
               <Comment key={comment.id} comment={comment} />
             ))
           )}

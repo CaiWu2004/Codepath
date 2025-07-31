@@ -1028,3 +1028,253 @@ body {
   background-color: #f7d794;
   color: #2d3436;
 }
+
+/*  create post*/
+
+/* Create Post Specific Styles */
+.create-post {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  backdrop-filter: blur(5px);
+}
+
+.dark .create-post {
+  background-color: rgba(45, 52, 54, 0.7);
+}
+
+.upload-btn {
+  background-color: var(--geo-color);
+  color: var(--text-color);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-bottom: 1rem;
+}
+
+.upload-btn:hover {
+  background-color: #f3c57b;
+}
+
+.image-preview-container {
+  margin: 1rem 0;
+}
+
+.image-preview {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  height: 200px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: var(--danger-color);
+  color: white;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.file-name {
+  display: block;
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.upload-progress {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.upload-progress progress {
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+}
+
+.upload-progress span {
+  font-size: 0.8rem;
+  color: var(--primary-color);
+}
+
+/* Disabled state for buttons */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* post details */
+/* Post Detail Edit Form Styles */
+.post-detail .edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.post-detail .form-group {
+  margin-bottom: 1rem;
+}
+
+.post-detail .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.post-detail .edit-form input,
+.post-detail .edit-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.dark .post-detail .edit-form input,
+.dark .post-detail .edit-form textarea {
+  background-color: rgba(45, 52, 54, 0.9);
+}
+
+.post-detail .edit-form textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.post-detail .edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.post-detail .edit-actions button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+  font-weight: 600;
+}
+
+.post-detail .edit-actions button[type="submit"] {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+}
+
+.post-detail .edit-actions button[type="button"] {
+  background-color: var(--geo-color);
+  color: var(--text-color);
+}
+
+/* Image Upload Styles */
+.upload-btn {
+  background-color: var(--geo-color);
+  color: var(--text-color);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-bottom: 0.5rem;
+}
+
+.upload-btn:hover {
+  background-color: #f3c57b;
+}
+
+.image-preview-container {
+  margin: 1rem 0;
+}
+
+.image-preview {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  height: 200px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+  border: 2px dashed var(--primary-color);
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: var(--danger-color);
+  color: white;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.file-name {
+  display: block;
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+/* Confirmation Dialog */
+.post-detail .delete-confirm {
+  background-color: var(--light-color);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  max-width: 400px;
+  margin: 2rem auto;
+  text-align: center;
+}
+
+.dark .post-detail .delete-confirm {
+  background-color: var(--dark-color);
+}
+
+.post-detail .delete-confirm p {
+  margin-bottom: 1.5rem;
+}
+
+.post-detail .delete-confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
