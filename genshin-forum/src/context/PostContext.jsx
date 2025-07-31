@@ -1,11 +1,14 @@
 // src/context/PostContext.jsx
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { AuthContext } from "./AuthContext";
 
 export const PostContext = createContext();
 
 export function PostProvider({ children }) {
-  // ... existing state declarations ...
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { user } = useContext(AuthContext);
 
   const fetchPosts = async () => {
     try {
@@ -13,61 +16,42 @@ export function PostProvider({ children }) {
       const { data, error } = await supabase
         .from("posts")
         .select("*")
-        .order(sortBy, { ascending: sortBy === "created_at" ? false : true });
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       setPosts(data || []);
     } catch (error) {
       console.error("Error fetching posts:", error);
-      // Handle RLS error specifically
-      if (error.code === "42501") {
-        console.warn("Row Level Security violation - check your policies");
-      }
     } finally {
       setLoading(false);
     }
   };
 
   const uploadImage = async (file) => {
-    try {
-      const user = supabase.auth.user();
-      if (!user) throw new Error("User not authenticated");
+    if (!user) throw new Error("User not authenticated");
 
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${user.id}-${Date.now()}.${fileExt}`;
 
-      const { data, error } = await supabase.storage
-        .from("post_images")
-        .upload(fileName, file);
+    const { data, error } = await supabase.storage
+      .from("post_images")
+      .upload(fileName, file);
 
-      if (error) throw error;
+    if (error) throw error;
 
-      // Get public URL with cache-busting
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("post_images").getPublicUrl(data.path, {
-        download: false,
-        transform: {
-          width: 800,
-          height: 600,
-          quality: 80,
-        },
-      });
+    // Get public URL
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("post_images").getPublicUrl(data.path);
 
-      return publicUrl;
-    } catch (error) {
-      console.error("Detailed storage error:", error);
-      throw new Error("Image upload failed. Please try again.");
-    }
+    return publicUrl;
   };
 
   const createPost = async (postData, imageFile = null) => {
     try {
-      const user = supabase.auth.user();
       if (!user) throw new Error("User must be logged in");
 
-      let imageUrl = postData.image || null;
-
+      let imageUrl = null;
       if (imageFile) {
         imageUrl = await uploadImage(imageFile);
       }
@@ -79,20 +63,33 @@ export function PostProvider({ children }) {
             title: postData.title,
             content: postData.content,
             image: imageUrl,
-            upvotes: 0,
-            comments: [],
-            user_id: user.id, // Critical for RLS
+            user_id: user.id,
           },
         ])
         .select();
 
       if (error) throw error;
+      await fetchPosts(); // Refresh posts after creation
       return data[0];
     } catch (error) {
-      console.error("Detailed create error:", error);
-      throw new Error(error.message || "Failed to create post");
+      console.error("Error creating post:", error);
+      throw error;
     }
   };
 
-  // ... rest of your existing methods ...
+  // Add similar error handling for other methods (upvote, etc.)
+
+  return (
+    <PostContext.Provider
+      value={{
+        posts,
+        loading,
+        fetchPosts,
+        createPost,
+        uploadImage,
+      }}
+    >
+      {children}
+    </PostContext.Provider>
+  );
 }
