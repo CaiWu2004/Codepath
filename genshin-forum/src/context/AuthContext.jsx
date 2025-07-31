@@ -11,40 +11,36 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
   // Handle profile creation/update
+  // Add headers to profile requests
   const handleProfile = async (user, username) => {
-    try {
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("id, username")
-        .eq("id", user.id)
-        .single();
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, username")
+      .eq("id", user.id)
+      .single();
 
-      if (profileError || !profile) {
-        const { error: createError } = await supabase.from("profiles").insert([
+    if (profileError?.code === "PGRST106") {
+      // No rows found
+      const { error: createError } = await supabase.from("profiles").insert(
+        [
           {
             id: user.id,
             username:
               username ||
               user.email?.split("@")[0] ||
-              "user_" + Math.random().toString(36).substring(2, 9),
+              "user_" + crypto.randomUUID().slice(0, 8),
           },
-        ]);
+        ],
+        {
+          returning: "minimal", // Don't return the inserted record
+        }
+      );
 
-        if (createError) throw createError;
-      } else if (username && username !== profile.username) {
-        const { error: updateError } = await supabase
-          .from("profiles")
-          .update({ username })
-          .eq("id", user.id);
-
-        if (updateError) throw updateError;
-      }
-    } catch (error) {
-      console.error("Profile error:", error);
-      throw error;
+      if (createError) throw createError;
+    } else if (profileError) {
+      throw profileError;
     }
   };
-
   // Initialize auth state
   useEffect(() => {
     const initializeAuth = async () => {

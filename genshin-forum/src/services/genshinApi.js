@@ -1,20 +1,35 @@
-const API_BASE = "https://api.genshin.dev";
+// Use a fallback when API is unavailable
+const FALLBACK_CHARACTERS = [
+  "Amber",
+  "Barbara",
+  "Beidou",
+  "Bennett",
+  "Chongyun",
+  "Diluc",
+  "Fischl",
+  "Jean",
+  "Kaeya",
+  "Keqing",
+  "Lisa",
+  "Mona",
+  "Ningguang",
+  "Noelle",
+  "Qiqi",
+  "Razor",
+  "Venti",
+  "Xiangling",
+  "Xiao",
+  "Xingqiu",
+];
 
 export async function getCharacters() {
   try {
-    // Use a CORS proxy or your backend
-    const response = await fetch(
-      `https://cors-anywhere.herokuapp.com/${API_BASE}/characters`,
-      {
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-        },
-      }
-    );
-    if (!response.ok) throw new Error("Failed to fetch characters");
-    return await response.json();
+    const response = await fetch("https://api.genshin.dev/characters");
+    if (!response.ok) return FALLBACK_CHARACTERS;
+    const data = await response.json();
+    return data.length ? data : FALLBACK_CHARACTERS;
   } catch (error) {
-    console.error("Error fetching characters:", error);
-    return [];
+    console.error("Using fallback characters:", error);
+    return FALLBACK_CHARACTERS;
   }
 }

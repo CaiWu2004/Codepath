@@ -1,36 +1,47 @@
 import { useState, useEffect } from "react";
 import { getCharacters } from "../services/genshinApi";
 
-export default function CharacterSelector({ onSelect, disabled = false }) {
+export default function CharacterSelector({ onSelect, disabled }) {
   const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    let mounted = true;
+
     const fetchCharacters = async () => {
       try {
         const data = await getCharacters();
-        setCharacters(data);
+        if (mounted) {
+          setCharacters(data);
+          setLoading(false);
+        }
       } catch (err) {
-        setError("Failed to load characters");
-        console.error("Error fetching characters:", err);
-      } finally {
-        setLoading(false);
+        if (mounted) {
+          setError("Failed to load characters");
+          setLoading(false);
+        }
       }
     };
+
     fetchCharacters();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   if (loading) return <div>Loading characters...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-    <div className="character-selector">
-      <h4>Add a Genshin Character (Optional)</h4>
+    <div className="mb-4">
+      <label className="block mb-2">Select Character (Optional)</label>
       <select
         onChange={(e) => onSelect(e.target.value)}
-        defaultValue=""
         disabled={disabled}
+        className="w-full p-2 border rounded"
+        defaultValue=""
       >
         <option value="">None</option>
         {characters.map((char) => (
