@@ -1,83 +1,54 @@
-// src/pages/Signup.jsx
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { supabase } from "../supabaseClient";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const { signUp, loading, error, resetError } = useAuth();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const navigate = useNavigate();
 
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    resetError(); // Clear previous errors
 
-    // Basic client-side validation
-    if (!username.trim()) {
-      setError("Username is required");
-      return;
-    }
+    // Client-side validation
     if (password.length < 6) {
-      setError("Password must be at least 6 characters");
       return;
     }
 
     try {
-      setError("");
-      setIsLoading(true);
-
-      // Sign up with Supabase
-      const { data: signUpData, error: signUpError } =
-        await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              username: username,
-            },
-            emailRedirectTo: `${window.location.origin}/welcome`,
-          },
-        });
+      const { data, error: signUpError } = await signUp(
+        email,
+        password,
+        username
+      );
 
       if (signUpError) throw signUpError;
 
-      // Handle email confirmation scenario
-      if (signUpData.user && signUpData.user.identities?.length === 0) {
+      // Check if email confirmation is needed
+      if (data.user && data.user.identities?.length === 0) {
         setShowConfirmation(true);
       } else {
         navigate("/");
       }
     } catch (err) {
-      // Handle specific Supabase errors
-      if (err.message.includes("User already registered")) {
-        setError("This email is already registered. Please log in.");
-      } else if (
-        err.message.includes("Password should be at least 6 characters")
-      ) {
-        setError("Password must be at least 6 characters");
-      } else {
-        setError(err.message || "Failed to create account");
-      }
       console.error("Signup error:", err);
-    } finally {
-      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="auth-container">
       <div className="auth-form">
         <h2>Create Your Genshin Impact Account</h2>
-
         {showConfirmation ? (
           <div className="confirmation-message">
-            <h3>Check your email!</h3>
+            <h3>Email Verification Sent!</h3>
             <p>
-              We've sent a confirmation link to {email}. Please verify your
-              email to complete registration.
+              We've sent a confirmation link to {email}. Please check your
+              inbox.
             </p>
             <button onClick={() => navigate("/login")} className="auth-button">
               Return to Login
@@ -95,8 +66,8 @@ export default function Signup() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
-                  placeholder="Choose a username"
                   minLength={3}
+                  placeholder="Choose a username"
                 />
               </div>
               <div className="form-group">
@@ -118,16 +89,12 @@ export default function Signup() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  placeholder="Create a password (min 6 characters)"
                   minLength={6}
+                  placeholder="Create a password (min 6 characters)"
                 />
               </div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="auth-button"
-              >
-                {isLoading ? "Creating account..." : "Sign Up"}
+              <button type="submit" disabled={loading} className="auth-button">
+                {loading ? "Creating account..." : "Sign Up"}
               </button>
             </form>
             <div className="auth-footer">

@@ -7,7 +7,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: false, // Disabled to prevent URL session detection
+    detectSessionInUrl: true,
     storage: {
       getItem: (key) => localStorage.getItem(key),
       setItem: (key, value) => localStorage.setItem(key, value),
@@ -16,9 +16,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   },
 });
 
-// Debugging in development
+// Debugging
 if (import.meta.env.DEV) {
-  supabase.auth.onAuthStateChange((event, session) => {
-    console.log("Supabase auth event:", event, session);
-  });
+  window.supabase = supabase; // Make available in browser console
 }
