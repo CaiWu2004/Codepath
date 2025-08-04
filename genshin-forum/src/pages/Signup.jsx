@@ -12,7 +12,7 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    resetError(); // Clear previous errors
+    resetError();
 
     // Client-side validation
     if (password.length < 6) {
@@ -26,13 +26,17 @@ export default function Signup() {
         username
       );
 
-      if (signUpError) throw signUpError;
+      if (signUpError) {
+        throw signUpError;
+      }
 
       // Check if email confirmation is needed
-      if (data.user && data.user.identities?.length === 0) {
-        setShowConfirmation(true);
-      } else {
-        navigate("/");
+      if (data && data.user) {
+        if (data.user.identities && data.user.identities.length === 0) {
+          setShowConfirmation(true);
+        } else {
+          navigate("/");
+        }
       }
     } catch (err) {
       console.error("Signup error:", err);

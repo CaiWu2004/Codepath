@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import {
   createContext,
   useContext,
@@ -70,11 +69,15 @@ export function AuthProvider({ children }) {
           emailRedirectTo: `${window.location.origin}/welcome`,
         },
       });
-      if (signUpError) throw signUpError;
-      return data;
+
+      if (signUpError) {
+        throw signUpError;
+      }
+
+      return { data, error: null };
     } catch (err) {
       setError(err.message);
-      throw err;
+      return { data: null, error: err };
     } finally {
       setLoading(false);
     }
@@ -89,11 +92,13 @@ export function AuthProvider({ children }) {
           email,
           password,
         });
+
       if (signInError) throw signInError;
-      return data;
+
+      return { data, error: null };
     } catch (err) {
       setError(err.message);
-      throw err;
+      return { data: null, error: err };
     } finally {
       setLoading(false);
     }

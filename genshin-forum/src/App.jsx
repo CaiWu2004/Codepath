@@ -8,6 +8,7 @@ import Signup from "./pages/Signup";
 import PostPage from "./pages/PostPage";
 import CreatePost from "./components/CreatePost";
 import Welcome from "./pages/Welcome"; // Add this import
+import "./App.css"; // Make sure this path is correct
 
 function AppContent() {
   return (
