@@ -32,6 +32,7 @@ function AppContent() {
       <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/welcome" element={<Welcome />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route
