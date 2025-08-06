@@ -7,7 +7,7 @@ export default function Post({ post }) {
       <Link to={`/post/${post.id}`} className="post-link">
         <div className="post-header">
           <span className="post-date">
-            {new Date(post.createdAt).toLocaleDateString()}
+            {new Date(post.created_at).toLocaleDateString()}
           </span>
           <h3 className="post-title">{post.title}</h3>
         </div>
@@ -22,10 +22,10 @@ export default function Post({ post }) {
       <div className="post-footer">
         <div className="post-stats">
           <span className="upvotes">
-            <FaArrowUp /> {post.upvotes}
+            <FaArrowUp /> {post.upvotes || 0}
           </span>
           <span className="comments">
-            <FaComment /> {post.comments.length}
+            <FaComment /> {post.comments?.length || 0}
           </span>
         </div>
       </div>

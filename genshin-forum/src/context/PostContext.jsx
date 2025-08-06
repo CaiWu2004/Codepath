@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { AuthContext } from "./AuthContext";
 
@@ -7,6 +7,8 @@ export const PostContext = createContext();
 export function PostProvider({ children }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState("createdAt");
   const { user } = useContext(AuthContext);
 
   const fetchPostsWithProfiles = async () => {
@@ -26,10 +28,32 @@ export function PostProvider({ children }) {
       setPosts(data || []);
     } catch (error) {
       console.error("Error fetching posts:", error);
+      setPosts([]);
     } finally {
       setLoading(false);
     }
   };
+
+  // Add useEffect to fetch posts when component mounts
+  useEffect(() => {
+    fetchPostsWithProfiles();
+  }, []);
+
+  // Filter and sort posts based on search term and sort option
+  const filteredAndSortedPosts = posts
+    .filter(
+      (post) =>
+        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (post.content &&
+          post.content.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+    .sort((a, b) => {
+      if (sortBy === "upvotes") {
+        return (b.upvotes || 0) - (a.upvotes || 0);
+      } else {
+        return new Date(b.created_at) - new Date(a.created_at);
+      }
+    });
 
   const uploadImage = async (file) => {
     if (!user) throw new Error("User not authenticated");
@@ -150,7 +174,7 @@ export function PostProvider({ children }) {
       }
 
       console.log("Post created successfully:", data[0]);
-      await fetchPostsWithProfiles();
+      await fetchPostsWithProfiles(); // Refresh posts after creating
       return data[0];
     } catch (error) {
       console.error("Error creating post:", error);
@@ -249,15 +273,23 @@ export function PostProvider({ children }) {
     }
   };
 
-  const updatePost = async (postId, updates) => {
+  const updatePost = async (postId, updates, imageFile = null) => {
     try {
       if (!user) {
         throw new Error("User must be logged in to update posts");
       }
 
+      let finalUpdates = { ...updates };
+
+      // Upload new image if provided
+      if (imageFile) {
+        const imageUrl = await uploadImage(imageFile);
+        finalUpdates.image = imageUrl;
+      }
+
       const { error } = await supabase
         .from("posts")
-        .update(updates)
+        .update(finalUpdates)
         .eq("id", postId)
         .eq("user_id", user.id); // Ensure user can only update their own posts
 
@@ -266,7 +298,7 @@ export function PostProvider({ children }) {
       // Update local state
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
-          post.id === postId ? { ...post, ...updates } : post
+          post.id === postId ? { ...post, ...finalUpdates } : post
         )
       );
 
@@ -304,8 +336,12 @@ export function PostProvider({ children }) {
   return (
     <PostContext.Provider
       value={{
-        posts,
+        posts: filteredAndSortedPosts,
         loading,
+        searchTerm,
+        setSearchTerm,
+        sortBy,
+        setSortBy,
         fetchPosts: fetchPostsWithProfiles,
         createPost,
         upvotePost,
