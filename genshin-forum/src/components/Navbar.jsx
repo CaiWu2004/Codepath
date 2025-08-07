@@ -11,7 +11,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
             alt="Genshin Impact Logo"
             className="logo"
           />
-          <span>Genshin Forum</span>
+          <span>Genshin Impact Forum</span>
         </Link>
 
         <div className="navbar-links">
